@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Client;
 use App\Models\Invoice;
+use App\Models\Service;
 use App\Models\InvoiceDetail;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -25,7 +26,7 @@ class InvoiceController extends Controller
      */
     public function index()
     {
-        $invoices = Invoice::with('client')->get();
+        $invoices = Invoice::with(['client', 'details.service'])->get();
 
         return view('invoices.index', compact('invoices'));
     }
@@ -39,7 +40,8 @@ class InvoiceController extends Controller
     {
         $invoice = new Invoice();
         $clients = Client::all()->unique('customer_name');
-        return view('invoices.create', compact('invoice', 'clients'));
+        $services = Service::all();
+        return view('invoices.create', compact('invoice', 'clients', 'services'));
     }
 
     /**
@@ -84,7 +86,7 @@ class InvoiceController extends Controller
      */
     public function show($id)
     {
-        $invoice = Invoice::find($id);
+        $invoice = Invoice::with('details.service')->findOrFail($id);
 
         return view('invoices.show', compact('invoice'));
     }
@@ -99,7 +101,8 @@ class InvoiceController extends Controller
     {
         $invoice = Invoice::with('details')->findOrFail($id);
         $clients = Client::all()->unique('customer_name');
-        return view('invoices.edit', compact('invoice', 'clients'));
+        $services = Service::all();
+        return view('invoices.edit', compact('invoice', 'clients', 'services'));
     }
 
     /**
@@ -165,6 +168,18 @@ class InvoiceController extends Controller
             ]);
         }
         return response()->json(['error' => 'Client not found'], 404);
+    }
+
+    public function getServiceDetails($id)
+    {
+        $service = Service::find($id);
+        if ($service) {
+            return response()->json([
+                'name' => $service->name,
+                'price' => $service->price,
+            ]);
+        }
+        return response()->json(['error' => 'Service not found'], 404);
     }
 
 }

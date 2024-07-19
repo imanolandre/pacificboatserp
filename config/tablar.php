@@ -165,6 +165,11 @@ return [
             'icon' => 'ti ti-building-warehouse',
             'url' => 'inventory'
         ],
+        [
+            'text' => 'Services',
+            'icon' => 'ti ti-building-warehouse',
+            'url' => 'services'
+        ],
 
     ],
 

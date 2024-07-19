@@ -57,11 +57,11 @@
                 </div>
             </div>
         </div>
-        <div id="descriptions-container">
-            <h4>Descriptions</h4>
+        <div id="services-container">
+            <h4>Services</h4>
             @foreach($invoice->details as $index => $detail)
-            <div class="description-item row">
-                <div class="col-md-3">
+            <div class="service-item row">
+                <div class="col-md-2">
                     <div class="form-group mb-3">
                         <label class="form-label">{{ Form::label('details['.$index.'][qty]', 'QTY') }}</label>
                         <div>
@@ -69,23 +69,15 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-6">
                     <div class="form-group mb-3">
-                        <label class="form-label">{{ Form::label('details['.$index.'][description]', 'Description') }}</label>
+                        <label class="form-label">{{ Form::label('details['.$index.'][service_id]', 'Service') }}</label>
                         <div>
-                            {{ Form::text('details['.$index.'][description]', $detail->description, ['class' => 'form-control texto', 'placeholder' => 'Description']) }}
+                            {{ Form::select('details['.$index.'][service_id]', $services->pluck('name', 'id'), $detail->service_id, ['class' => 'form-control texto select-service select2', 'placeholder' => 'Seleccione Cotización', 'id' => 'client_id', 'data-name' => $services->where('id', $detail->service_id)->first()->name]) }}
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <div class="form-group mb-3">
-                        <label class="form-label">{{ Form::label('details['.$index.'][date]', 'Date') }}</label>
-                        <div>
-                            {{ Form::date('details['.$index.'][date]', $detail->date, ['class' => 'form-control texto', 'placeholder' => 'Date']) }}
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div class="form-group mb-3">
                         <label class="form-label">{{ Form::label('details['.$index.'][total]', 'Total') }}</label>
                         <div>
@@ -96,9 +88,9 @@
             </div>
             @endforeach
         </div>
-        <button type="button" id="add-description" class="btn btn-primary ms-auto texto">
+        <button type="button" id="add-service" class="btn btn-primary ms-auto texto">
             <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tada icon-tabler icon-tabler-pencil-check" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /><path d="M15 19l2 2l4 -4" /></svg>
-            Add Description
+            Add Service
         </button>
         <div class="col-md-12">
             <div class="form-group mb-3">
@@ -110,16 +102,18 @@
             </div>
         </div>
         <script>
-           document.addEventListener('DOMContentLoaded', function () {
-                var text = new Text('.tom-select', {
+            document.addEventListener('DOMContentLoaded', function () {
+                // Inicializar Tom Select en el campo de selección del cliente
+                var select = new TomSelect('.select2', {
+                    // Opciones de configuración de Tom Select
                 });
 
-                document.getElementById('add-description').addEventListener('click', function() {
-                    var container = document.getElementById('descriptions-container');
-                    var count = container.getElementsByClassName('description-item').length;
+                document.getElementById('add-service').addEventListener('click', function() {
+                    var container = document.getElementById('services-container');
+                    var count = container.getElementsByClassName('service-item').length;
                     var newItem = `
-                        <div class="description-item row">
-                            <div class="col-md-3">
+                        <div class="service-item row">
+                            <div class="col-md-2">
                                 <div class="form-group mb-3">
                                     <label class="form-label">QTY</label>
                                     <div>
@@ -127,23 +121,20 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-6">
                                 <div class="form-group mb-3">
-                                    <label class="form-label">Description</label>
+                                    <label class="form-label">Service</label>
                                     <div>
-                                        <input type="text" name="details[` + count + `][description]" class="form-control texto" placeholder="Description">
+                                        <select name="details[` + count + `][service_id]" class="form-control texto select-service tomselect2" placeholder="Select Service">
+                                            <option value="">Select</option>
+                                            @foreach($services as $service)
+                                            <option value="{{ $service->id }}" data-name="{{ $service->name }}">{{ $service->name }}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <div class="form-group mb-3">
-                                    <label class="form-label">Date</label>
-                                    <div>
-                                        <input type="date" name="details[` + count + `][date]" class="form-control texto" placeholder="Date">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <div class="form-group mb-3">
                                     <label class="form-label">Total</label>
                                     <div>
@@ -154,24 +145,56 @@
                         </div>
                     `;
                     container.insertAdjacentHTML('beforeend', newItem);
+
+                    // Agregar evento change al nuevo select de servicios
+                    var newServiceSelect = container.querySelector('.service-item:last-child .select-service');
+                    newServiceSelect.addEventListener('change', function() {
+                        var serviceId = this.value;
+                        var totalInput = this.closest('.service-item').querySelector('[name$="[total]"]');
+                        if (serviceId) {
+                            fetch(`/invoices/service-details/${serviceId}`)
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.error) {
+                                        alert(data.error);
+                                    } else {
+                                        totalInput.value = data.price;
+                                    }
+                                })
+                                .catch(error => console.error('Error fetching service details:', error));
+                        } else {
+                            totalInput.value = '';
+                        }
+                    });
+
+                    // Re-inicializar Tom Select para el nuevo select
+                    new TomSelect(newServiceSelect);
+                });
+
+                // Agregar evento change a los selects de servicios existentes
+                var serviceSelects = document.querySelectorAll('.select-service');
+                serviceSelects.forEach(function(serviceSelect) {
+                    serviceSelect.addEventListener('change', function() {
+                        var serviceId = this.value;
+                        var totalInput = this.closest('.service-item').querySelector('[name$="[total]"]');
+                        if (serviceId) {
+                            fetch(`/invoices/service-details/${serviceId}`)
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.error) {
+                                        alert(data.error);
+                                    } else {
+                                        totalInput.value = data.price;
+                                    }
+                                })
+                                .catch(error => console.error('Error fetching service details:', error));
+                        } else {
+                            totalInput.value = '';
+                        }
+                    });
                 });
             });
-
-            function submitForm() {
-                showSpinner();
-                document.getElementById('your-form-id').submit();
-            }
-
-            function showSpinner() {
-                document.getElementById('page-loader').style.display = 'flex';
-                document.getElementById('loading-text').innerText = 'Guardando';
-            }
-
-            function hideSpinner() {
-                document.getElementById('page-loader').style.display = 'none';
-                document.getElementById('loading-text').innerText = '';
-            }
-        </script>
+            </script>
     </div>
     <div class="form-footer">
         <div class="text-end">
@@ -229,31 +252,17 @@
     });
 </script>
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    var clientSelect = document.getElementById('client_id');
+    document.addEventListener('DOMContentLoaded', function () {
+        // Inicializar Tom Select en el campo de selección del cliente
+        var select = new TomSelect('.tomselect2', {
+            // Opciones de configuración de Tom Select
+        });
 
-    clientSelect.addEventListener('change', function() {
-        var clientId = this.value;
-        if (clientId) {
-            fetch(`/invoices/${clientId}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.error) {
-                        alert(data.error);
-                    } else {
-                        document.getElementById('yacht_name').value = data.yacht_name;
-                        document.getElementById('location').value = data.location;
-                        document.getElementById('email').value = data.email;
-                    }
-                })
-                .catch(error => console.error('Error fetching client details:', error));
-        } else {
-            document.getElementById('yacht_name').value = '';
-            document.getElementById('location').value = '';
-            document.getElementById('email').value = '';
-        }
+        // Resto de tu script...
+        document.getElementById('submit-button').addEventListener('click', function () {
+            // ... Tu lógica actual ...
+        });
     });
-});
 </script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -282,6 +291,27 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var serviceSelect = document.getElementById('service_id');
 
+        clientSelect.addEventListener('change', function() {
+            var serviceId = this.value;
+            if (serviceId) {
+                fetch(`/invoices/service-details/${serviceId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            alert(data.error);
+                        } else {
+                            document.getElementById('total').value = data.price;
+                        }
+                    })
+                    .catch(error => console.error('Error fetching client details:', error));
+            } else {
+                document.getElementById('total').value = '';
 
-
+            }
+        });
+    });
+    </script>

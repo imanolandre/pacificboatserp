@@ -2,17 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Week;
+use App\Models\Service;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
 
 /**
- * Class WeekController
+ * Class ServiceController
  * @package App\Http\Controllers
  */
-class WeekController extends Controller
+class ServiceController extends Controller
 {
-
     /**
      * Display a listing of the resource.
      *
@@ -20,14 +18,9 @@ class WeekController extends Controller
      */
     public function index()
     {
-        $weeks = Week::all();
+        $services = Service::all();
 
-        // Agrupa las semanas por "week1" y "week2"
-        $groupedWeeks = $weeks->groupBy('date');
-
-        $daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-
-        return view('weeks.index', compact('groupedWeeks', 'daysOfWeek'));
+        return view('service.index', compact('services'));
     }
 
     /**
@@ -37,8 +30,8 @@ class WeekController extends Controller
      */
     public function create()
     {
-        $week = new Week();
-        return view('weeks.create', compact('week'));
+        $service = new Service();
+        return view('service.create', compact('service'));
     }
 
     /**
@@ -49,12 +42,12 @@ class WeekController extends Controller
      */
     public function store(Request $request)
     {
-        request()->validate(Week::$rules);
+        request()->validate(Service::$rules);
 
-        $week = Week::create($request->all());
+        $service = Service::create($request->all());
 
-        return redirect()->route('weeks.index')
-            ->with('success', 'Week created successfully.');
+        return redirect()->route('services.index')
+            ->with('success', 'Service created successfully.');
     }
 
     /**
@@ -65,9 +58,9 @@ class WeekController extends Controller
      */
     public function show($id)
     {
-        $week = Week::find($id);
+        $service = Service::find($id);
 
-        return view('weeks.show', compact('week'));
+        return view('service.show', compact('service'));
     }
 
     /**
@@ -78,26 +71,26 @@ class WeekController extends Controller
      */
     public function edit($id)
     {
-        $week = Week::find($id);
+        $service = Service::find($id);
 
-        return view('weeks.edit', compact('week'));
+        return view('service.edit', compact('service'));
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request $request
-     * @param  Week $week
+     * @param  Service $service
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Week $week)
+    public function update(Request $request, Service $service)
     {
-        request()->validate(Week::$rules);
+        request()->validate(Service::$rules);
 
-        $week->update($request->all());
+        $service->update($request->all());
 
-        return redirect()->route('weeks.index')
-            ->with('success', 'Week updated successfully');
+        return redirect()->route('services.index')
+            ->with('success', 'Service updated successfully');
     }
 
     /**
@@ -107,9 +100,9 @@ class WeekController extends Controller
      */
     public function destroy($id)
     {
-        $week = Week::find($id)->delete();
+        $service = Service::find($id)->delete();
 
-        return redirect()->route('weeks.index')
-            ->with('success', 'Week deleted successfully');
+        return redirect()->route('services.index')
+            ->with('success', 'Service deleted successfully');
     }
 }

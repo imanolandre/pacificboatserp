@@ -27,6 +27,7 @@ class Week extends Model
 		'yacht_name' => 'required',
 		'location' => 'required',
 		'date' => 'required',
+        'day' => 'required',
 		'color' => 'required',
     ];
 
@@ -37,7 +38,7 @@ class Week extends Model
      *
      * @var array
      */
-    protected $fillable = ['customer_name','yacht_name','location','date','color'];
+    protected $fillable = ['customer_name','yacht_name','location','date','day','color'];
 
 
 

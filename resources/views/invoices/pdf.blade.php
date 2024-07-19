@@ -140,8 +140,8 @@
             @foreach($invoice->details as $detail)
             <tr class="left">
                 <td class="center ">{{ $detail->qty }}</td>
-                <td colspan="2" class="center des">{{ $detail->description }}</td>
-                <td class="center">{{ \Carbon\Carbon::parse($detail->date)->format('m/d/Y') }}</td>
+                <td colspan="2" class="center des">{{ $detail->service->name }}</td>
+                <td class="center">{{ \Carbon\Carbon::parse($invoice->date)->format('m/d/Y') }}</td>
                 <td class="center">${{ number_format($detail->total, 2) }}</td>
             </tr>
             @endforeach
@@ -150,7 +150,7 @@
             @php
                 $subtotal = $invoice->details->sum('total');
             @endphp
-            <tr class="total">
+            <tr colspan="5" class="total">
                 <td></td>
                 <td colspan="2"></td>
                 <td class="center"><b>SUBTOTAL</b></td>
@@ -170,7 +170,7 @@
             </tr>
             <tr></tr>
             <tr style="padding-top: 10px;" class="notes">
-                <td colspan="5">Make all Checks Payable to <span class="blue">{{ $invoice->client->customer_name }}</span></td>
+                <td colspan="5">Make all Checks Payable to <span class="blue">ALEX MERINO</span></td>
             </tr>
         </table>
     </div>

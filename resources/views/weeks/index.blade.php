@@ -19,32 +19,36 @@
         <div class="container-xl">
             <div class="row g-2 align-items-center">
                 <div class="col">
-                    <div class="page-pretitle">List</div>
-                    <h2 class="page-title">{{ __('Weeks') }}</h2>
+                    <!-- Page pre-title -->
+                    <div class="page-pretitle">
+                        List
+                    </div>
+                    <h2 class="page-title">
+                        {{ __('Week ') }}
+                    </h2>
                 </div>
+                <!-- Page title actions -->
                 <div class="col-auto ms-auto d-print-none">
                     <div class="btn-list">
                         <a href="{{ route('weeks.create') }}" class="btn btn-primary d-none d-sm-inline-block texto">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon-pulse" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                <path stroke="none" d="M0 0h24H0z" fill="none"/>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon-pulse" width="24" height="24"
+                                 viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                 stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                                 <line x1="12" y1="5" x2="12" y2="19"/>
                                 <line x1="5" y1="12" x2="19" y2="12"/>
                             </svg>
                             Create
                         </a>
                         <a href="{{ route('weeks.create') }}" class="btn btn-primary d-sm-none btn-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon-pulse" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                <path stroke="none" d="M0 0h24H0z" fill="none"></path>
-                                <path d="M12 5l0 14"></path>
-                                <path d="M5 12l14 0"></path>
-                            </svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon-pulse" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 5l0 14"></path><path d="M5 12l14 0"></path></svg>
                         </a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
+    <!-- Page body -->
     <div class="page-body">
         @php
             function getContrastColor($hexColor) {
@@ -56,123 +60,95 @@
             }
         @endphp
         <div class="container-xl">
-            <div class="row row-deck row-cards">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-body border-bottom py-3 table-responsive">
-                            <ul class="nav nav-tabs" id="weekTabs" role="tablist">
-                                @foreach($organizedWeeks as $weekNumber => $subWeeks)
-                                    <li class="nav-item">
-                                        <a class="nav-link {{ $loop->first ? 'active' : '' }}" id="week-tab-{{ $weekNumber }}" data-bs-toggle="tab" href="#week-{{ $weekNumber }}" role="tab" aria-controls="week-{{ $weekNumber }}" aria-selected="{{ $loop->first ? 'true' : 'false' }}">
-                                            Week {{ $weekNumber }}
-                                        </a>
-                                    </li>
-                                @endforeach
-                            </ul>
-                            <div class="tab-content" id="weekTabsContent">
-                                @foreach($organizedWeeks as $weekNumber => $subWeeks)
-                                    <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="week-{{ $weekNumber }}" role="tabpanel" aria-labelledby="week-tab-{{ $weekNumber }}">
-                                        <ul class="nav nav-tabs" id="subWeekTabs-{{ $weekNumber }}" role="tablist">
-                                            @foreach($subWeeks as $subWeekNumber => $days)
-                                                <li class="nav-item">
-                                                    <a class="nav-link {{ $loop->first ? 'active' : '' }}" id="sub-week-tab-{{ $weekNumber }}-{{ $subWeekNumber }}" data-bs-toggle="tab" href="#sub-week-{{ $weekNumber }}-{{ $subWeekNumber }}" role="tab" aria-controls="sub-week-{{ $weekNumber }}-{{ $subWeekNumber }}" aria-selected="{{ $loop->first ? 'true' : 'false' }}">
-                                                        Sub-Week {{ $subWeekNumber }}
-                                                    </a>
-                                                </li>
-                                            @endforeach
-                                        </ul>
-                                        <div class="tab-content" id="subWeekTabsContent-{{ $weekNumber }}">
-                                            @foreach($subWeeks as $subWeekNumber => $days)
-                                                <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="sub-week-{{ $weekNumber }}-{{ $subWeekNumber }}" role="tabpanel" aria-labelledby="sub-week-tab-{{ $weekNumber }}-{{ $subWeekNumber }}">
-                                                    <ul class="nav nav-tabs" id="dayTabs-{{ $weekNumber }}-{{ $subWeekNumber }}" role="tablist">
-                                                        @foreach($days as $dayName => $records)
-                                                            <li class="nav-item">
-                                                                <a class="nav-link {{ $loop->first ? 'active' : '' }}" id="day-tab-{{ $weekNumber }}-{{ $subWeekNumber }}-{{ $dayName }}" data-bs-toggle="tab" href="#day-{{ $weekNumber }}-{{ $subWeekNumber }}-{{ $dayName }}" role="tab" aria-controls="day-{{ $weekNumber }}-{{ $subWeekNumber }}-{{ $dayName }}" aria-selected="{{ $loop->first ? 'true' : 'false' }}">
-                                                                    {{ $dayName }}
-                                                                </a>
-                                                            </li>
-                                                        @endforeach
-                                                    </ul>
-                                                    <div class="tab-content" id="dayTabsContent-{{ $weekNumber }}-{{ $subWeekNumber }}">
-                                                        @foreach($days as $dayName => $records)
-                                                            <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="day-{{ $weekNumber }}-{{ $subWeekNumber }}-{{ $dayName }}" role="tabpanel" aria-labelledby="day-tab-{{ $weekNumber }}-{{ $subWeekNumber }}-{{ $dayName }}">
-                                                                <table class="table card-table table-hover table-vcenter table-borderless table-striped">
-                                                                    <thead>
-                                                                        <tr>
-                                                                            <th>{{ __('Customer Name') }}</th>
-                                                                            <th>{{ __('Yacht Name') }}</th>
-                                                                            <th>{{ __('Location') }}</th>
-                                                                            <th>{{ __('Date') }}</th>
-                                                                            <th class="w-1"></th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                        @foreach($records as $week)
-                                                                            <tr style="background-color: {{ $week->color }}; color: {{ getContrastColor($week->color) }};">
-                                                                                <td>{{ $week->customer_name }}</td>
-                                                                                <td>{{ $week->yacht_name }}</td>
-                                                                                <td>{{ $week->location }}</td>
-                                                                                <td>{{ \Carbon\Carbon::parse($week->date)->format('d-m-Y') }}</td>
-                                                                                <td>
-                                                                                    <div class="btn-list flex-nowrap">
-                                                                                        <div class="dropdown">
-                                                                                            <button class="btn dropdown-toggle align-text-top" data-bs-toggle="dropdown">
-                                                                                                Actions
-                                                                                            </button>
-                                                                                            <div class="dropdown-menu dropdown-menu-end">
-                                                                                                <a class="dropdown-item" href="{{ route('weeks.show',$week->id) }}">
-                                                                                                    View
-                                                                                                </a>
-                                                                                                <a class="dropdown-item" href="{{ route('weeks.edit',$week->id) }}">
-                                                                                                    Edit
-                                                                                                </a>
-                                                                                                <form action="{{ route('weeks.destroy',$week->id) }}" method="POST">
-                                                                                                    @csrf
-                                                                                                    @method('DELETE')
-                                                                                                    <button type="submit" onclick="if(!confirm('Do you Want to Proceed?')){return false;}" class="dropdown-item text-red"><i class="fa fa-fw fa-trash"></i>
-                                                                                                        Delete
-                                                                                                    </button>
-                                                                                                </form>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </td>
-                                                                            </tr>
-                                                                        @endforeach
-                                                                    </tbody>
-                                                                </table>
+            @if(config('tablar','display_alert'))
+                @include('tablar::common.alert')
+            @endif
+
+            <!-- Main Tabs for Weeks -->
+            <ul class="nav nav-tabs" id="weekTabs" role="tablist">
+                @foreach($groupedWeeks as $week => $weeks)
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link @if($loop->first) active @endif" id="week{{ $week }}-tab" data-bs-toggle="tab" href="#week{{ $week }}" role="tab" aria-controls="week{{ $week }}" aria-selected="true">
+                            {{ ucfirst($week) }}
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+
+            <div class="tab-content" id="weekTabsContent">
+                @foreach($groupedWeeks as $week => $weeks)
+                    <div class="tab-pane fade @if($loop->first) show active @endif" id="week{{ $week }}" role="tabpanel" aria-labelledby="week{{ $week }}-tab">
+                        <!-- Tabs for days of the week -->
+                        <ul class="nav nav-tabs" id="dayTabs{{ $week }}" role="tablist">
+                            @foreach($daysOfWeek as $day)
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link @if($loop->first) active @endif" id="day{{ $week }}-{{ $day }}-tab" data-bs-toggle="tab" href="#day{{ $week }}-{{ $day }}" role="tab" aria-controls="day{{ $week }}-{{ $day }}" aria-selected="true">
+                                        {{ ucfirst($day) }}
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ul>
+
+                        <div class="tab-content" id="dayTabsContent{{ $week }}">
+                            @foreach($daysOfWeek as $day)
+                                <div class="tab-pane fade @if($loop->first) show active @endif" id="day{{ $week }}-{{ $day }}" role="tabpanel" aria-labelledby="day{{ $week }}-{{ $day }}-tab">
+                                    <table class="table table-vcenter datatable">
+                                        <thead>
+                                            <tr>
+                                                <th>No.</th>
+                                                <th>Customer Name</th>
+                                                <th>Yacht Name</th>
+                                                <th>Location</th>
+                                                <th>Week</th>
+                                                <th>Day</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @forelse ($weeks->where('day', strtolower($day)) as $index => $week)
+                                                <tr style="background-color: {{ $week->color }}; color: {{ getContrastColor($week->color) }}">
+                                                    <td>{{ $index + 1 }}</td>
+                                                    <td>{{ $week->customer_name }}</td>
+                                                    <td>{{ $week->yacht_name }}</td>
+                                                    <td>{{ $week->location }}</td>
+                                                    <td>{{ $week->date }}</td>
+                                                    <td>{{ $week->day }}</td>
+                                                    <td>
+                                                        <div class="btn-list flex-nowrap">
+                                                            <div class="dropdown">
+                                                                <button class="btn dropdown-toggle align-text-top" data-bs-toggle="dropdown">
+                                                                    Actions
+                                                                </button>
+                                                                <div class="dropdown-menu dropdown-menu-end">
+                                                                    <a class="dropdown-item" href="{{ route('weeks.show', $week->id) }}">View</a>
+                                                                    <a class="dropdown-item" href="{{ route('weeks.edit', $week->id) }}">Edit</a>
+                                                                    <form action="{{ route('weeks.destroy', $week->id) }}" method="POST">
+                                                                        @csrf
+                                                                        @method('DELETE')
+                                                                        <button type="submit" onclick="if(!confirm('Do you Want to Proceed?')){return false;}" class="dropdown-item text-red">
+                                                                            Delete
+                                                                        </button>
+                                                                    </form>
+                                                                </div>
                                                             </div>
-                                                        @endforeach
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="7">No Data Found</td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @endforeach
                         </div>
                     </div>
-                </div>
+                @endforeach
             </div>
         </div>
     </div>
-    <script>
-        $(document).ready(function() {
-            $('.tab-pane').each(function() {
-                var table = $(this).find('table').DataTable({
-                    dom: 'ft',
-                    pageLength: 10,
-                    responsive: true,
-                    searching: true,
-                });
-
-                // Fix the search bar display issue when switching tabs
-                $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
-                    $($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive.recalc();
-                });
-            });
-        });
-    </script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap4.min.js"></script>

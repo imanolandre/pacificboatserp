@@ -11,14 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('weeks', function (Blueprint $table) {
+        Schema::create('services', function (Blueprint $table) {
             $table->id();
-            $table->string('customer_name');
-            $table->string('yacht_name');
-            $table->string('location');
-            $table->string('date');
-            $table->string('day');
-            $table->string('color');
+            $table->string('name');
+            $table->string('price');
             $table->timestamps();
         });
     }

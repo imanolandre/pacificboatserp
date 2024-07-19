@@ -29,6 +29,8 @@ Route::resource('/clients', ClientController::class);
 Route::resource('/inventory', ProductController::class);
 Route::get('/clients/{id}', [App\Http\Controllers\ClientController::class, 'getClientDetails']);
 Route::get('/invoices/client-details/{id}', [App\Http\Controllers\InvoiceController::class, 'getClientDetails']);
+Route::get('/invoices/service-details/{id}', [App\Http\Controllers\InvoiceController::class, 'getServicetDetails']);
 
 
 
+Route::resource('/services', App\Http\Controllers\ServiceController::class);

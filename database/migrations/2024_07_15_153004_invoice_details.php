@@ -14,12 +14,13 @@ return new class extends Migration
         Schema::create('invoice_details', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('invoice_id');
+            $table->unsignedBigInteger('service_id');
             $table->integer('qty');
-            $table->string('description');
-            $table->string('date');
-            $table->decimal('total', 10, 2);
+            $table->decimal('total', 8, 2);
             $table->timestamps();
+
             $table->foreign('invoice_id')->references('id')->on('invoices')->onDelete('cascade');
+            $table->foreign('service_id')->references('id')->on('services')->onDelete('cascade');
         });
     }
 

@@ -30,12 +30,32 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-2">
             <div class="form-group mb-3">
-                <label class="form-label">   {{ Form::label('Date') }}</label>
+                <label class="form-label">{{ Form::label('date', 'Select Week') }}</label>
                 <div>
-                    {{ Form::date('date', $week->date, ['class' => 'form-control texto' . ($errors->has('date') ? ' is-invalid' : '')]) }}
+                    <select name="date" class="form-control form-select">
+                        <option value="week1">Week 1</option>
+                        <option value="week2">Week 2</option>
+                    </select>
                     {!! $errors->first('date', '<div class="invalid-feedback">:message</div>') !!}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group mb-3">
+                <label class="form-label">{{ Form::label('day', 'Select Day') }}</label>
+                <div>
+                    <select name="day" class="form-control form-select">
+                        <option value="monday">Monday</option>
+                        <option value="tuesday">Tuesday</option>
+                        <option value="wednesday">Wednesday</option>
+                        <option value="thursday">Thursday</option>
+                        <option value="friday">Friday</option>
+                        <option value="saturday">Saturday</option>
+                        <option value="sunday">Sunday</option>
+                    </select>
+                    {!! $errors->first('day', '<div class="invalid-feedback">:message</div>') !!}
                 </div>
             </div>
         </div>
@@ -101,3 +121,4 @@
         document.getElementById('loading-text').innerText = '';
     }
 </script>
+

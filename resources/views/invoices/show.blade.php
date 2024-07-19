@@ -77,9 +77,8 @@
                                 @foreach($invoice->details as $detail)
                                     <div class="description-item">
                                         <p><strong>QTY:</strong> {{ $detail->qty }}</p>
-                                        <p><strong>Description:</strong> {{ $detail->description }}</p>
-                                        <p><strong>Date:</strong> {{ $detail->date }}</p>
-                                        <p><strong>Total:</strong> {{ $detail->total }}</p>
+                                        <p><strong>Description:</strong> {{ $detail->service->name }}</p>
+                                        <p><strong>Total:</strong>$ {{ $detail->service->price }}</p>
                                         <hr>
                                     </div>
                                 @endforeach
