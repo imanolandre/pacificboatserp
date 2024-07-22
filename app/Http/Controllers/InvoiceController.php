@@ -60,19 +60,17 @@ class InvoiceController extends Controller
         }
 
         $pdf = PDF::loadView('invoices.pdf', compact('invoice'));
-
-        // Definir el nombre del archivo
         $nombreArchivo = "Invoice-{$invoice->id}-" . Carbon::now()->format('YmdHis') . ".pdf";
-
-        // Guardar el archivo en el almacenamiento
         $pdfPath = "file/{$nombreArchivo}";
         $pdf->save(public_path($pdfPath));
-
-        // Actualizar el campo 'file' con la ruta del archivo PDF
         $invoice->update(['file' => $pdfPath]);
 
-        // Enviar el correo
-        Mail::to($invoice->email)->later(Carbon::parse($request->date), new InvoiceMail($invoice, $pdfPath));
+        $sendDate = Carbon::parse($request->date)->setTime(0, 0, 0);
+        if (Carbon::now()->greaterThan($sendDate)) {
+            $sendDate = Carbon::now()->addMinutes(1);
+        }
+
+        Mail::to($invoice->email)->later($sendDate, new InvoiceMail($invoice, $pdfPath));
 
         return redirect()->route('invoices.index')
             ->with('success', 'Invoice created successfully.');
@@ -115,30 +113,26 @@ class InvoiceController extends Controller
     public function update(Request $request, $id)
     {
         $invoice = Invoice::findOrFail($id);
-
-        // Validación
         request()->validate(Invoice::$rules);
-
-        // Actualizar la factura
         $invoice->update($request->all());
-
-        // Eliminar los detalles existentes
         $invoice->details()->delete();
 
-        // Crear los nuevos detalles
         foreach ($request->details as $detail) {
             $invoice->details()->create($detail);
         }
 
-        // Generar y guardar el PDF
         $pdf = PDF::loadView('invoices.pdf', compact('invoice'));
         $nombreArchivo = "Invoice-{$invoice->id}-" . Carbon::now()->format('YmdHis') . ".pdf";
         $pdfPath = "file/{$nombreArchivo}";
         $pdf->save(public_path($pdfPath));
         $invoice->update(['file' => $pdfPath]);
 
-        // Enviar el correo
-        Mail::to($invoice->email)->later(Carbon::parse($request->date), new InvoiceMail($invoice, $pdfPath));
+        $sendDate = Carbon::parse($request->date)->setTime(0, 0, 0);
+        if (Carbon::now()->greaterThan($sendDate)) {
+            $sendDate = Carbon::now()->addMinutes(1);
+        }
+
+        Mail::to($invoice->email)->later($sendDate, new InvoiceMail($invoice, $pdfPath));
 
         return redirect()->route('invoices.index')
             ->with('success', 'Invoice updated successfully');

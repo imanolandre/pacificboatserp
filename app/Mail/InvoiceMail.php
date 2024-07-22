@@ -13,22 +13,12 @@ class InvoiceMail extends Mailable
     public $invoice;
     public $pdfPath;
 
-    /**
-     * Create a new message instance.
-     *
-     * @return void
-     */
     public function __construct($invoice, $pdfPath)
     {
         $this->invoice = $invoice;
         $this->pdfPath = $pdfPath;
     }
 
-    /**
-     * Build the message.
-     *
-     * @return $this
-     */
     public function build()
     {
         return $this->view('emails.invoice')
