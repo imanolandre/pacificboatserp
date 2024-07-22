@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use App\Mail\InvoiceMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use App\Jobs\SendInvoiceEmail;
 
 /**
  * Class InvoiceController
@@ -65,10 +66,12 @@ class InvoiceController extends Controller
         $pdf->save(public_path($pdfPath));
         $invoice->update(['file' => $pdfPath]);
 
-        $sendDate = Carbon::parse($request->date)->setTime(0, 0, 0);
+        $sendDate = Carbon::parse($invoice->date)->setTime(0, 0, 0);
         if (Carbon::now()->greaterThan($sendDate)) {
             $sendDate = Carbon::now()->addMinutes(1);
         }
+
+        SendInvoiceEmail::dispatch($invoice, $pdfPath)->delay($sendDate);
 
         Mail::to($invoice->email)->later($sendDate, new InvoiceMail($invoice, $pdfPath));
 
@@ -127,10 +130,12 @@ class InvoiceController extends Controller
         $pdf->save(public_path($pdfPath));
         $invoice->update(['file' => $pdfPath]);
 
-        $sendDate = Carbon::parse($request->date)->setTime(0, 0, 0);
+        $sendDate = Carbon::parse($invoice->date)->setTime(0, 0, 0);
         if (Carbon::now()->greaterThan($sendDate)) {
             $sendDate = Carbon::now()->addMinutes(1);
         }
+
+        SendInvoiceEmail::dispatch($invoice, $pdfPath)->delay($sendDate);
 
         Mail::to($invoice->email)->later($sendDate, new InvoiceMail($invoice, $pdfPath));
 

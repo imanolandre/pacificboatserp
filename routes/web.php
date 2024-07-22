@@ -31,6 +31,6 @@ Route::get('/clients/{id}', [App\Http\Controllers\ClientController::class, 'getC
 Route::get('/invoices/client-details/{id}', [App\Http\Controllers\InvoiceController::class, 'getClientDetails']);
 Route::get('/invoices/service-details/{id}', [App\Http\Controllers\InvoiceController::class, 'getServicetDetails']);
 
-
+Route::get('/send-scheduled-emails', [InvoiceController::class, 'sendScheduledEmails'])->name('send-scheduled-emails');
 
 Route::resource('/services', App\Http\Controllers\ServiceController::class);
