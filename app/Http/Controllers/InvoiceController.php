@@ -13,6 +13,8 @@ use App\Mail\InvoiceMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use App\Jobs\SendInvoiceEmail;
+use Illuminate\Support\Facades\Artisan;
+
 
 /**
  * Class InvoiceController
@@ -66,18 +68,13 @@ class InvoiceController extends Controller
         $pdf->save(public_path($pdfPath));
         $invoice->update(['file' => $pdfPath]);
 
-        $sendDate = Carbon::parse($invoice->date)->setTime(0, 0, 0);
-        if (Carbon::now()->greaterThan($sendDate)) {
-            $sendDate = Carbon::now()->addMinutes(1);
-        }
-
-        SendInvoiceEmail::dispatch($invoice, $pdfPath)->delay($sendDate);
-
-        Mail::to($invoice->email)->later($sendDate, new InvoiceMail($invoice, $pdfPath));
+        // No enviar el correo aquí, solo programar la tarea
+        Artisan::call('send:scheduled-invoice-email', ['invoiceId' => $invoice->id]);
 
         return redirect()->route('invoices.index')
             ->with('success', 'Invoice created successfully.');
     }
+
 
     /**
      * Display the specified resource.
@@ -130,14 +127,7 @@ class InvoiceController extends Controller
         $pdf->save(public_path($pdfPath));
         $invoice->update(['file' => $pdfPath]);
 
-        $sendDate = Carbon::parse($invoice->date)->setTime(0, 0, 0);
-        if (Carbon::now()->greaterThan($sendDate)) {
-            $sendDate = Carbon::now()->addMinutes(1);
-        }
-
-        SendInvoiceEmail::dispatch($invoice, $pdfPath)->delay($sendDate);
-
-        Mail::to($invoice->email)->later($sendDate, new InvoiceMail($invoice, $pdfPath));
+        Artisan::call('send:scheduled-invoice-email', ['invoiceId' => $invoice->id]);
 
         return redirect()->route('invoices.index')
             ->with('success', 'Invoice updated successfully');

@@ -105,7 +105,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @forelse ($weeks->where('day', strtolower($day)) as $index => $week)
+                                            @forelse ($weeks->filter(function ($value, $key) use ($day) { return $value->day === strtolower($day); }) as $index => $week)
                                                 <tr style="background-color: {{ $week->color }}; color: {{ getContrastColor($week->color) }}">
                                                     <td>{{ $index + 1 }}</td>
                                                     <td>{{ $week->customer_name }}</td>

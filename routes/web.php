@@ -29,7 +29,7 @@ Route::resource('/clients', ClientController::class);
 Route::resource('/inventory', ProductController::class);
 Route::get('/clients/{id}', [App\Http\Controllers\ClientController::class, 'getClientDetails']);
 Route::get('/invoices/client-details/{id}', [App\Http\Controllers\InvoiceController::class, 'getClientDetails']);
-Route::get('/invoices/service-details/{id}', [App\Http\Controllers\InvoiceController::class, 'getServicetDetails']);
+Route::get('/invoices/service-details/{id}', [App\Http\Controllers\InvoiceController::class, 'getServiceDetails']);
 
 Route::get('/send-scheduled-emails', [InvoiceController::class, 'sendScheduledEmails'])->name('send-scheduled-emails');
 

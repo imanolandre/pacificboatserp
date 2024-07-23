@@ -22,7 +22,6 @@ class WeekController extends Controller
     {
         $weeks = Week::all();
 
-        // Agrupa las semanas por "week1" y "week2"
         $groupedWeeks = $weeks->groupBy('date');
 
         $daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];

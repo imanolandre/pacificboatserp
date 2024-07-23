@@ -73,7 +73,7 @@
                     <div class="form-group mb-3">
                         <label class="form-label">{{ Form::label('details['.$index.'][service_id]', 'Service') }}</label>
                         <div>
-                            {{ Form::select('details['.$index.'][service_id]', $services->pluck('name', 'id'), $detail->service_id, ['class' => 'form-control texto select-service select2', 'placeholder' => 'Seleccione Cotización', 'id' => 'client_id', 'data-name' => $services->where('id', $detail->service_id)->first()->name]) }}
+                            {{ Form::select('details['.$index.'][service_id]', $services->pluck('name', 'id'), $detail->service_id, ['class' => 'form-control texto select-service tom-select', 'placeholder' => 'Seleccione Cotización', 'data-index' => $index]) }}
                         </div>
                     </div>
                 </div>
@@ -81,7 +81,7 @@
                     <div class="form-group mb-3">
                         <label class="form-label">{{ Form::label('details['.$index.'][total]', 'Total') }}</label>
                         <div>
-                            {{ Form::text('details['.$index.'][total]', $detail->total, ['class' => 'form-control texto', 'placeholder' => 'Total']) }}
+                            {{ Form::text('details['.$index.'][total]', $detail->total, ['class' => 'form-control texto', 'placeholder' => 'Total', 'id' => 'total-'.$index]) }}
                         </div>
                     </div>
                 </div>
@@ -104,11 +104,34 @@
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 // Inicializar Tom Select en el campo de selección del cliente
-                var select = new TomSelect('.select2', {
-                    // Opciones de configuración de Tom Select
-                });
+                var selects = document.querySelectorAll('.select-service');
+                    selects.forEach(function (select) {
+                        new TomSelect(select, {
+                            // Opciones de configuración de Tom Select
+                        });
 
-                document.getElementById('add-service').addEventListener('click', function() {
+                        select.addEventListener('change', function () {
+                            var serviceId = this.value;
+                            var index = this.getAttribute('data-index');
+                            var totalInput = document.getElementById('total-' + index);
+                            if (serviceId) {
+                                fetch(`/invoices/service-details/${serviceId}`)
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data.error) {
+                                            alert(data.error);
+                                        } else {
+                                            totalInput.value = data.price;
+                                        }
+                                    })
+                                    .catch(error => console.error('Error fetching service details:', error));
+                            } else {
+                                totalInput.value = '';
+                            }
+                        });
+                    });
+
+                    document.getElementById('add-service').addEventListener('click', function() {
                     var container = document.getElementById('services-container');
                     var count = container.getElementsByClassName('service-item').length;
                     var newItem = `
@@ -125,7 +148,7 @@
                                 <div class="form-group mb-3">
                                     <label class="form-label">Service</label>
                                     <div>
-                                        <select name="details[` + count + `][service_id]" class="form-control texto select-service tomselect2" placeholder="Select Service">
+                                        <select name="details[` + count + `][service_id]" class="form-control texto select-service tom-select" placeholder="Select Service" data-index="` + count + `">
                                             <option value="">Select</option>
                                             @foreach($services as $service)
                                             <option value="{{ $service->id }}" data-name="{{ $service->name }}">{{ $service->name }}</option>
@@ -138,7 +161,7 @@
                                 <div class="form-group mb-3">
                                     <label class="form-label">Total</label>
                                     <div>
-                                        <input type="text" name="details[` + count + `][total]" class="form-control texto" placeholder="Total">
+                                        <input type="text" name="details[` + count + `][total]" class="form-control texto" placeholder="Total" id="total-` + count + `">
                                     </div>
                                 </div>
                             </div>
@@ -146,37 +169,14 @@
                     `;
                     container.insertAdjacentHTML('beforeend', newItem);
 
-                    // Agregar evento change al nuevo select de servicios
+                    // Re-inicializar Tom Select para el nuevo select
                     var newServiceSelect = container.querySelector('.service-item:last-child .select-service');
+                    new TomSelect(newServiceSelect);
+
                     newServiceSelect.addEventListener('change', function() {
                         var serviceId = this.value;
-                        var totalInput = this.closest('.service-item').querySelector('[name$="[total]"]');
-                        if (serviceId) {
-                            fetch(`/invoices/service-details/${serviceId}`)
-                                .then(response => response.json())
-                                .then(data => {
-                                    if (data.error) {
-                                        alert(data.error);
-                                    } else {
-                                        totalInput.value = data.price;
-                                    }
-                                })
-                                .catch(error => console.error('Error fetching service details:', error));
-                        } else {
-                            totalInput.value = '';
-                        }
-                    });
-
-                    // Re-inicializar Tom Select para el nuevo select
-                    new TomSelect(newServiceSelect);
-                });
-
-                // Agregar evento change a los selects de servicios existentes
-                var serviceSelects = document.querySelectorAll('.select-service');
-                serviceSelects.forEach(function(serviceSelect) {
-                    serviceSelect.addEventListener('change', function() {
-                        var serviceId = this.value;
-                        var totalInput = this.closest('.service-item').querySelector('[name$="[total]"]');
+                        var index = this.getAttribute('data-index');
+                        var totalInput = document.getElementById('total-' + index);
                         if (serviceId) {
                             fetch(`/invoices/service-details/${serviceId}`)
                                 .then(response => response.json())

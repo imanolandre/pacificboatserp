@@ -5,7 +5,7 @@ namespace App\Console;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use App\Models\Invoice;
-use App\Jobs\SendInvoiceEmail;
+use Carbon\Carbon;
 
 class Kernel extends ConsoleKernel
 {
@@ -15,16 +15,15 @@ class Kernel extends ConsoleKernel
      * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
      * @return void
      */
-    protected function schedule(Schedule $schedule): void
+    protected function schedule(Schedule $schedule)
     {
-        $schedule->call(function () {
-            $invoices = Invoice::whereDay('date', now()->day)->get();
-
-            foreach ($invoices as $invoice) {
-                SendInvoiceEmail::dispatch($invoice);
-            }
-        })->daily();
+        $invoices = Invoice::all();
+        foreach ($invoices as $invoice) {
+            $sendDate = Carbon::parse($invoice->date)->setTime(0, 0, 0);
+            $schedule->command('send:scheduled-invoice-email', [$invoice->id])->at($sendDate);
+        }
     }
+
 
     /**
      * Register the commands for the application.
